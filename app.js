@@ -8,4 +8,8 @@ app.get("/api/topics", getTopics);
 
 app.all("*", handleInvalidEndpoint);
 
+app.use((err, req, res, next) => {
+  res.status(500).send({ msg: "Internal server error" });
+});
+
 module.exports = app;
