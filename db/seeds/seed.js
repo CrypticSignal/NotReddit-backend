@@ -35,14 +35,12 @@ const seed = async (data) => {
 
   for (const tableName of tableNames) {
     await db.query(`DROP TABLE IF EXISTS ${tableName} CASCADE;`);
-    console.log(`${tableName} table dropped.`);
   }
 
   await db.query(createTopicsTableQuery);
   await db.query(createUserTableQuery);
   await db.query(createArticlesTableQuery);
   await db.query(createCommentsTableQuery);
-  console.log("Tables created.");
 
   const topicDataArray = topicData.map((data) => [data.slug, data.description]);
   const topicSeed = format(
@@ -85,7 +83,6 @@ const seed = async (data) => {
   await db.query(userSeed);
   await db.query(articleSeed);
   await db.query(commentSeed);
-  console.log("Tables populated.");
 };
 
 module.exports = seed;
