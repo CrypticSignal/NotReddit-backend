@@ -89,6 +89,6 @@ exports.updateArticleById = async (id, requestBody) => {
   }
 
   return {
-    article: queryResult.rows,
+    article: queryResult.rows[0],
   };
 };
