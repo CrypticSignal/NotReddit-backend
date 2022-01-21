@@ -68,7 +68,7 @@ exports.fetchArticleById = async (id) => {
   queryResult.rows[0]["comment_count"] = numComments;
 
   return {
-    article: queryResult.rows,
+    article: queryResult.rows[0],
   };
 };
 
