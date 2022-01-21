@@ -9,7 +9,6 @@ exports.fetchComments = async (articleId) => {
   }
 
   const queryResult = await db.query(`SELECT * FROM comments where article_id='${articleId}'`);
-  console.log(queryResult.rows);
 
   if (!queryResult.rows.length) {
     return Promise.reject({
@@ -47,4 +46,21 @@ exports.addComment = async (articleId, author, body) => {
   return {
     comment: queryResult.rows,
   };
+};
+
+exports.deleteCommentFromDB = async (commentId) => {
+  if (isNaN(commentId)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid comment ID specified",
+    });
+  }
+  const queryResult = await db.query(`DELETE FROM comments WHERE comment_id=$1`, [commentId]);
+  if (!queryResult.rowCount) {
+    return Promise.reject({
+      status: 400,
+      msg: `No comment with an ID of ${commentId} found.`,
+    });
+  }
+  return true;
 };

@@ -48,8 +48,6 @@ exports.fetchArticles = async (sortBy, sortOrder, topic) => {
     article["comment_count"] = numComments;
   }
 
-  console.log(queryResult.rows);
-
   return {
     articles: queryResult.rows,
   };

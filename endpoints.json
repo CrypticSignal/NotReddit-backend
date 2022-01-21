@@ -1,27 +1,132 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "serves up a json representation of all the available endpoints of the api",
+    "queries": [],
+    "successStatusCode": 200
   },
   "GET /api/topics": {
-    "description": "serves an array of all topics",
+    "description": "Responds with an array of topics.",
     "queries": [],
+    "successStatusCode": 200,
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
-  "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+  "GET /api/articles/:article_id": {
+    "description": "Responds with the specified article.",
+    "queries": [],
+    "successStatusCode": 200,
     "exampleResponse": {
-      "articles": [
+      "article": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "article_id": 2,
+          "title": "Example Title",
+          "body": "Example body.",
+          "votes": 0,
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "created_at": "2020-10-16T05:03:00.000Z",
+          "comment_count": 0
         }
       ]
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates the number of votes for a particular article and returns the updated article.",
+    "queries": [],
+    "exampleBody": {
+      "inc_votes": -10
+    },
+    "successStatusCode": 200,
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 1,
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "votes": 90
+        }
+      ]
+    }
+  },
+  "GET /api/articles/": {
+    "description": "Responds with a list of articles. You can filter by topic, as well as specify a sort method/order.",
+    "queries": ["sort_by", "order", "topic"],
+    "successStatusCode": 200,
+    "exampleResponse": {
+      "articles": [
+        {
+          "article_id": 1,
+          "title": "Example Title",
+          "body": "Example body.",
+          "votes": 0,
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "created_at": "2020-10-16T05:03:00.000Z",
+          "comment_count": 0
+        },
+        {
+          "article_id": 2,
+          "title": "Example Title 2 ",
+          "body": "Example body 2.",
+          "votes": 2,
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "created_at": "2020-10-16T05:03:00.000Z",
+          "comment_count": 1
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "Responds with an array of comments for the specified article.",
+    "queries": [],
+    "successStatusCode": 200,
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 2,
+          "author": "butter_bridge",
+          "article_id": 1,
+          "votes": 14,
+          "created_at": "2020-10-31T03:03:00.000Z",
+          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+        },
+        {
+          "comment_id": 3,
+          "author": "icellusedkars",
+          "article_id": 1,
+          "votes": 100,
+          "created_at": "2020-03-01T01:13:00.000Z",
+          "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Posts a comment to a particular article and responds with the posted comment.",
+    "queries": [],
+    "successStatusCode": 201,
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 19,
+          "author": "icellusedkars",
+          "article_id": 1,
+          "votes": 0,
+          "created_at": "2022-01-21T12:38:27.196Z",
+          "body": "Test comment."
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment by ID.",
+    "queries": [],
+    "successStatusCode": 204,
+    "exampleResponse": {}
   }
 }

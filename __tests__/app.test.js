@@ -9,25 +9,24 @@ afterAll(() => db.end());
 
 describe("Request made to an invalid endpoint", () => {
   it("Responds with a status of 404 and a message of 'Invalid endpoint'", async () => {
-    const response = await request(app).get("/invalid-endpoint");
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ msg: "Invalid endpoint" });
+    const { status, body } = await request(app).get("/invalid-endpoint");
+    expect(status).toBe(404);
+    expect(body).toEqual({ msg: "Invalid endpoint" });
   });
 });
 
 describe("GET /api/topics", () => {
   it("Responds with a status of 200", async () => {
-    const response = await request(app).get("/api/topics");
-    expect(response.status).toBe(200);
+    const { status } = await request(app).get("/api/topics");
+    expect(status).toBe(200);
   });
   it("Returns an object containing an array of topics in the correct format.", async () => {
-    const response = await request(app).get("/api/topics");
-    const topicsObject = response.body;
-    expect(topicsObject).toBeInstanceOf(Object);
-    expect(topicsObject.topics).toBeInstanceOf(Array);
-    expect(topicsObject.topics[0]).toBeInstanceOf(Object);
+    const { body } = await request(app).get("/api/topics");
+    expect(body).toBeInstanceOf(Object);
+    expect(body.topics).toBeInstanceOf(Array);
+    expect(body.topics[0]).toBeInstanceOf(Object);
 
-    topicsObject.topics.forEach((topic) => {
+    body.topics.forEach((topic) => {
       expect(topic).toEqual(
         expect.objectContaining({
           slug: expect.any(String),
@@ -40,16 +39,15 @@ describe("GET /api/topics", () => {
 
 describe("GET /api/article/:article_id", () => {
   it("Responds with a status of 200 when the article_id exists", async () => {
-    const response = await request(app).get("/api/articles/2");
-    expect(response.status).toBe(200);
+    const { status } = await request(app).get("/api/articles/2");
+    expect(status).toBe(200);
   });
   it("Returns an object containing the article in the correct format.", async () => {
-    const response = await request(app).get("/api/articles/2");
-    const articleObject = response.body;
-    expect(articleObject).toBeInstanceOf(Object);
-    expect(articleObject.article).toBeInstanceOf(Array);
-    expect(articleObject.article[0]).toBeInstanceOf(Object);
-    expect(articleObject.article[0]).toEqual(
+    const { body } = await request(app).get("/api/articles/2");
+    expect(body).toBeInstanceOf(Object);
+    expect(body.article).toBeInstanceOf(Array);
+    expect(body.article[0]).toBeInstanceOf(Object);
+    expect(body.article[0]).toEqual(
       expect.objectContaining({
         article_id: expect.any(Number),
         title: expect.any(String),
@@ -64,14 +62,14 @@ describe("GET /api/article/:article_id", () => {
   });
   it("Returns a status of 404 if the article_id does not exist", async () => {
     const nonExistentID = 9999;
-    const response = await request(app).get(`/api/articles/${nonExistentID}`);
-    expect(response.status).toBe(404);
-    expect(response.body.msg).toBe(`No article found with an ID of ${nonExistentID}`);
+    const { status, body } = await request(app).get(`/api/articles/${nonExistentID}`);
+    expect(status).toBe(404);
+    expect(body.msg).toBe(`No article found with an ID of ${nonExistentID}`);
   });
   it("Returns a status of 400 if an invalid ID is supplied", async () => {
-    const response = await request(app).get("/api/articles/meow");
-    expect(response.status).toBe(400);
-    expect(response.body.msg).toBe("Bad request");
+    const { status, body } = await request(app).get("/api/articles/meow");
+    expect(status).toBe(400);
+    expect(body.msg).toBe("Bad request");
   });
 });
 
@@ -169,11 +167,11 @@ describe("GET /api/articles", () => {
 
 describe("GET/api/articles/:article_id/comments", () => {
   it("Returns a status of 200 if the article ID exists", async () => {
-    const { status, body } = await request(app).get("/api/articles/1/comments");
+    const { status } = await request(app).get("/api/articles/1/comments");
     expect(status).toBe(200);
   });
   it("Returns the comments in the correct format, if the article has comments", async () => {
-    const { status, body } = await request(app).get("/api/articles/1/comments");
+    const { body } = await request(app).get("/api/articles/1/comments");
     body.comments.forEach((commentObject) => {
       expect(isNaN(Date.parse(commentObject.created_at))).toBe(false);
       expect(commentObject).toEqual(
@@ -242,7 +240,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     expect(status).toBe(400);
     expect(body.msg).toBe("article_id must be a number");
   });
-  it.only("Returns a status of 400 and the correct msg if a user not in the DB tries to post a comment", async () => {
+  it("Returns a status of 400 and the correct msg if a user not in the DB tries to post a comment", async () => {
     const testBody = {
       username: "unregisted_user",
       body: "This is my comment",
@@ -250,5 +248,49 @@ describe("POST /api/articles/:article_id/comments", () => {
     const { status, body } = await request(app).post("/api/articles/1/comments").send(testBody);
     expect(status).toBe(400);
     expect(body.msg).toBe("Username does not exist");
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  it("Returns a status of 204 when given a valid comment_id", async () => {
+    const { status, body } = await request(app).delete("/api/comments/1");
+    expect(status).toBe(204);
+    expect(body).toEqual({});
+  });
+  it("Returns a status of 400 and the correct msg if the comment ID does not exist", async () => {
+    const nonExistentID = 9999;
+    const { status, body } = await request(app).delete(`/api/comments/${nonExistentID}`);
+    expect(status).toBe(400);
+    expect(body.msg).toBe(`No comment with an ID of ${nonExistentID} found.`);
+  });
+  it("Returns a status of 400 and the correct msg if something other than a number is specified at the end of the path", async () => {
+    const { status, body } = await request(app).delete("/api/comments/a");
+    expect(status).toBe(400);
+    expect(body.msg).toBe("Invalid comment ID specified");
+  });
+});
+
+describe("GET /api", () => {
+  it("Returns a status of 200 and an object describing the available endpoints, containing at least the following keys: description, queries, successStatusCode", async () => {
+    const { status, body } = await request(app).get("/api");
+    const responseObject = JSON.parse(body);
+
+    const endpointObjects = [];
+
+    for (const object in responseObject) {
+      endpointObjects.push(responseObject[object]);
+    }
+    expect(status).toBe(200);
+    expect(responseObject).toBeInstanceOf(Object);
+
+    endpointObjects.forEach((endpointObject) => {
+      expect(endpointObject).toEqual(
+        expect.objectContaining({
+          description: expect.any(String),
+          queries: expect.any(Array),
+          successStatusCode: expect.any(Number),
+        })
+      );
+    });
   });
 });
