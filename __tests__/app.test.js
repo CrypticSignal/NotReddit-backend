@@ -77,7 +77,7 @@ describe("PATCH /api/article/:article_id", () => {
     const requestBody = { inc_votes: -10 };
     const { status, body } = await request(app).patch("/api/articles/1").send(requestBody);
     expect(status).toBe(200);
-    expect(body.article[0]).toEqual(
+    expect(body.article).toEqual(
       expect.objectContaining({
         article_id: 1,
         title: "Living in the shadow of a great man",
