@@ -1,5 +1,3 @@
-const req = require("express/lib/request");
-const { query } = require("../db/connection");
 const db = require("../db/connection");
 
 const validSortMethods = [
