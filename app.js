@@ -1,4 +1,9 @@
-const { handleCustomError, handleInvalidEndpoint, handlePsqlErrors } = require("./errorHandlers");
+const {
+  handleCustomError,
+  handleInvalidEndpoint,
+  handlePsqlErrors,
+  handleUnexpectedErrors,
+} = require("./errorHandlers");
 const {
   getArticles,
   getArticleById,
@@ -29,5 +34,6 @@ app.all("/*", handleInvalidEndpoint);
 
 app.use(handlePsqlErrors);
 app.use(handleCustomError);
+app.use(handleUnexpectedErrors);
 
 module.exports = app;
