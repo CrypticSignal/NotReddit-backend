@@ -1,9 +1,8 @@
-const fs = require("fs/promises");
+const endpointsFile = require("../endpoints.json");
 
 exports.readEndpointsFile = async () => {
   try {
-    const endpointsFileContents = await fs.readFile(__dirname + "/../endpoints.json", "utf-8");
-    return endpointsFileContents;
+    return endpointsFile;
   } catch (err) {
     return Promise.reject({
       status: 500,
