@@ -7,7 +7,7 @@ exports.readEndpointsFile = async () => {
   } catch (err) {
     return Promise.reject({
       status: 500,
-      msg: "Unable to retrieve endpoints descriptions",
+      msg: "Internal server error",
     });
   }
 };
