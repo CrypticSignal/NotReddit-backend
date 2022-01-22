@@ -89,6 +89,17 @@ describe("PATCH /api/article/:article_id", () => {
       })
     );
   });
+  it("Responds with a 400 status and an error message if no body is sent with the request", async () => {
+    const { status, body } = await request(app).patch("/api/articles/1");
+    expect(status).toBe(400);
+    expect(body.msg).toBe("Request body is empty");
+  });
+  it("Responds with a 400 status and an error message if the request body contains the wrong key", async () => {
+    const requestBody = { inc_botes: 10 };
+    const { status, body } = await request(app).patch("/api/articles/1").send(requestBody);
+    expect(status).toBe(400);
+    expect(body.msg).toBe("Request body must contain an inc_votes key");
+  });
   it("Responds with a 400 status and an error message if an invalid ID is specified", async () => {
     const requestBody = { inc_votes: 1 };
     const { status, body } = await request(app).patch(`/api/articles/invalid-id`).send(requestBody);

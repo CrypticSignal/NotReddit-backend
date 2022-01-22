@@ -1,3 +1,4 @@
+const { request } = require("express");
 const db = require("../db/connection");
 
 const validSortMethods = [
@@ -71,6 +72,20 @@ exports.fetchArticleById = async (id) => {
 };
 
 exports.updateArticleById = async (id, requestBody) => {
+  if (Object.keys(requestBody).length === 0) {
+    return Promise.reject({
+      status: 400,
+      msg: "Request body is empty",
+    });
+  }
+
+  if (Object.keys(requestBody)[0] !== "inc_votes") {
+    return Promise.reject({
+      status: 400,
+      msg: "Request body must contain an inc_votes key",
+    });
+  }
+
   const queryResult = await db.query(
     `
 		UPDATE articles
