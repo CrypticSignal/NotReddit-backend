@@ -1,4 +1,3 @@
-const { request } = require("express");
 const db = require("../db/connection");
 
 const validSortMethods = [
@@ -14,11 +13,6 @@ const validSortMethods = [
 
 const validSortOrders = ["ASC", "DESC"];
 
-const getNumComments = async (articleId) => {
-  const comments = await db.query(`SELECT * FROM comments WHERE article_id=$1`, [articleId]);
-  return comments.rows.length;
-};
-
 exports.fetchArticles = async (sortBy, sortOrder, topic) => {
   if (!validSortMethods.includes(sortBy) || !validSortOrders.includes(sortOrder.toUpperCase())) {
     return Promise.reject({
@@ -27,10 +21,18 @@ exports.fetchArticles = async (sortBy, sortOrder, topic) => {
     });
   }
 
-  let query = `SELECT * FROM articles ORDER BY ${sortBy} ${sortOrder}`;
+  let query = `
+  SELECT articles.article_id, articles.title, articles.body, articles.votes, articles.topic, articles.author, articles.created_at,
+  COUNT(comments)::INT AS comment_count
+  FROM articles
+  LEFT JOIN comments
+  ON articles.article_id = comments.article_id
+  `;
 
   if (topic) {
-    query = `SELECT * FROM articles WHERE topic='${topic}' ORDER BY ${sortBy} ${sortOrder}`;
+    query += ` WHERE topic='${topic}' GROUP BY articles.article_id ORDER BY ${sortBy} ${sortOrder};`;
+  } else {
+    query += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${sortOrder};`;
   }
 
   const queryResult = await db.query(query);
@@ -42,18 +44,22 @@ exports.fetchArticles = async (sortBy, sortOrder, topic) => {
     });
   }
 
-  for (const article of queryResult.rows) {
-    const numComments = await getNumComments(article.article_id);
-    article["comment_count"] = numComments;
-  }
-
   return {
     articles: queryResult.rows,
   };
 };
 
 exports.fetchArticleById = async (id) => {
-  const queryResult = await db.query(`SELECT * FROM articles WHERE article_id=$1;`, [id]);
+  const queryResult = await db.query(
+    `SELECT articles.article_id, articles.title, articles.body, articles.votes, articles.topic, articles.author, articles.created_at,
+    COUNT(comments)::INT AS comment_count
+    FROM articles
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id;`,
+    [id]
+  );
 
   // If the article_id does not exist
   if (queryResult.rows.length === 0) {
@@ -62,9 +68,6 @@ exports.fetchArticleById = async (id) => {
       msg: `No article found with an ID of ${id}`,
     });
   }
-
-  const numComments = await getNumComments(id);
-  queryResult.rows[0]["comment_count"] = numComments;
 
   return {
     article: queryResult.rows[0],
