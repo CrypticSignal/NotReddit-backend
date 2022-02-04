@@ -1,5 +1,6 @@
 const app = require("../app");
 const db = require("../db/connection.js");
+const endpointsFile = require("../endpoints.json");
 const request = require("supertest");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
@@ -37,7 +38,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET /api/article/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   it("Responds with a status of 200 when the article_id exists", async () => {
     const { status } = await request(app).get("/api/articles/2");
     expect(status).toBe(200);
@@ -283,24 +284,7 @@ describe("DELETE /api/comments/:comment_id", () => {
 describe("GET /api", () => {
   it("Returns a status of 200 and an object describing the available endpoints, containing at least the following keys: description, queries, successStatusCode", async () => {
     const { status, body } = await request(app).get("/api");
-    const responseObject = JSON.parse(body);
-
-    const endpointObjects = [];
-
-    for (const object in responseObject) {
-      endpointObjects.push(responseObject[object]);
-    }
     expect(status).toBe(200);
-    expect(responseObject).toBeInstanceOf(Object);
-
-    endpointObjects.forEach((endpointObject) => {
-      expect(endpointObject).toEqual(
-        expect.objectContaining({
-          description: expect.any(String),
-          queries: expect.any(Array),
-          successStatusCode: expect.any(Number),
-        })
-      );
-    });
+    expect(body).toEqual(endpointsFile);
   });
 });
