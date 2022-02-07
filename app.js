@@ -16,9 +16,12 @@ const {
 } = require("./controllers/comments.controllers");
 const { getTopics } = require("./controllers/topics.controller");
 const { describeEndpoints } = require("./controllers/endpoints.controller");
+
+const cors = require("cors");
 const express = require("express");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get("/api/topics", getTopics);
