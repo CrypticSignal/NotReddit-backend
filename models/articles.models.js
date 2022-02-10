@@ -84,9 +84,6 @@ exports.updateArticleById = async (id, requestBody) => {
   }
 
   if (Object.keys(requestBody)[0] !== "inc_votes") {
-    console.log(requestBody);
-    console.log(Object.keys(requestBody));
-    console.log(Object.keys(requestBody)[0]);
     return Promise.reject({
       status: 400,
       msg: "Request body must contain an inc_votes key",
