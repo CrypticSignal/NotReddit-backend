@@ -352,3 +352,23 @@ describe("GET /api/users", () => {
     });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  it("Returns a status of 200.", async () => {
+    const { status } = await request(app).get("/api/users/butter_bridge");
+    expect(status).toBe(200);
+  });
+  it("Returns an object with a key of 'user' that has an object as its value.", async () => {
+    const { body } = await request(app).get("/api/users/butter_bridge");
+    expect(body).toBeInstanceOf(Object);
+    expect(body.user).toBeInstanceOf(Object);
+  });
+  it("The array of contains an object in the correct format.", async () => {
+    const { body } = await request(app).get("/api/users/butter_bridge");
+    expect(body.user).toEqual({
+      username: "butter_bridge",
+      avatar_url: "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+      name: "jonny",
+    });
+  });
+});

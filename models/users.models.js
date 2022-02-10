@@ -6,3 +6,10 @@ exports.fetchUsernames = async () => {
     usernames: queryResult.rows,
   };
 };
+
+exports.fetchUser = async (username) => {
+  const queryResult = await db.query("SELECT * FROM users WHERE username=$1", [username]);
+  return {
+    user: queryResult.rows[0],
+  };
+};
