@@ -84,6 +84,7 @@ exports.updateArticleById = async (id, requestBody) => {
   }
 
   if (Object.keys(requestBody)[0] !== "inc_votes") {
+    console.log(requestBody);
     console.log(Object.keys(requestBody));
     console.log(Object.keys(requestBody)[0]);
     return Promise.reject({

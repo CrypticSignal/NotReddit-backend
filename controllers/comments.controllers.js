@@ -1,4 +1,9 @@
-const { deleteCommentFromDB, fetchComments, addComment } = require("../models/comments.models");
+const {
+  deleteCommentFromDB,
+  fetchComments,
+  addComment,
+  updateCommentById,
+} = require("../models/comments.models");
 
 exports.getCommentsByArticleId = async (req, res, next) => {
   try {
@@ -24,6 +29,15 @@ exports.deleteComment = async (req, res, next) => {
     if (await deleteCommentFromDB(commentId)) {
       res.sendStatus(204);
     }
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.patchCommentById = async (req, res, next) => {
+  try {
+    const updatedComment = await updateCommentById(req.params.comment_id, req.body);
+    res.status(200).send(updatedComment);
   } catch (err) {
     next(err);
   }

@@ -64,3 +64,40 @@ exports.deleteCommentFromDB = async (commentId) => {
   }
   return true;
 };
+
+exports.updateCommentById = async (id, requestBody) => {
+  if (Object.keys(requestBody).length === 0) {
+    return Promise.reject({
+      status: 400,
+      msg: "Request body is empty",
+    });
+  }
+
+  if (Object.keys(requestBody)[0] !== "inc_votes") {
+    return Promise.reject({
+      status: 400,
+      msg: "Request body must contain an inc_votes key",
+    });
+  }
+
+  const queryResult = await db.query(
+    `
+		UPDATE comments
+    SET votes = votes + $1
+		WHERE comment_id = $2
+		RETURNING *;`,
+    [requestBody.inc_votes, id]
+  );
+
+  // If the article_id does not exist
+  if (queryResult.rows.length === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: `No comment found with an ID of ${id}`,
+    });
+  }
+
+  return {
+    comment: queryResult.rows[0],
+  };
+};

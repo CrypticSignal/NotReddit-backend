@@ -288,3 +288,47 @@ describe("GET /api", () => {
     expect(body).toEqual(endpointsFile);
   });
 });
+
+describe.only("PATCH /api/comments/:comment_id", () => {
+  it("Responds with a status of 200 and the updated comment", async () => {
+    const requestBody = { inc_votes: -10 };
+    const { status, body } = await request(app).patch("/api/comments/1").send(requestBody);
+    expect(status).toBe(200);
+    expect(body.comment).toEqual(
+      expect.objectContaining({
+        comment_id: 1,
+        author: "butter_bridge",
+        article_id: 9,
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        created_at: "2020-04-06T13:17:00.000Z",
+        votes: 6,
+      })
+    );
+  });
+  it("Responds with a 400 status and an error message if no body is sent with the request", async () => {
+    const { status, body } = await request(app).patch("/api/comments/1");
+    expect(status).toBe(400);
+    expect(body.msg).toBe("Request body is empty");
+  });
+  it("Responds with a 400 status and an error message if the request body contains the wrong key", async () => {
+    const requestBody = { inc_botes: 10 };
+    const { status, body } = await request(app).patch("/api/comments/1").send(requestBody);
+    expect(status).toBe(400);
+    expect(body.msg).toBe("Request body must contain an inc_votes key");
+  });
+  it("Responds with a 400 status and an error message if an invalid ID is specified", async () => {
+    const requestBody = { inc_votes: 1 };
+    const { status, body } = await request(app).patch("/api/comments/meow").send(requestBody);
+    expect(status).toBe(400);
+    expect(body.msg).toBe("Bad request");
+  });
+  it("Responds with a 404 status if a valid ID that does not exist is specified", async () => {
+    const nonExistentID = 9999;
+    const requestBody = { inc_votes: 1 };
+    const { status, body } = await request(app)
+      .patch(`/api/comments/${nonExistentID}`)
+      .send(requestBody);
+    expect(status).toBe(404);
+    expect(body.msg).toBe(`No comment found with an ID of ${nonExistentID}`);
+  });
+});
