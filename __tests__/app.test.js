@@ -289,7 +289,7 @@ describe("GET /api", () => {
   });
 });
 
-describe.only("PATCH /api/comments/:comment_id", () => {
+describe("PATCH /api/comments/:comment_id", () => {
   it("Responds with a status of 200 and the updated comment", async () => {
     const requestBody = { inc_votes: -10 };
     const { status, body } = await request(app).patch("/api/comments/1").send(requestBody);
@@ -330,5 +330,25 @@ describe.only("PATCH /api/comments/:comment_id", () => {
       .send(requestBody);
     expect(status).toBe(404);
     expect(body.msg).toBe(`No comment found with an ID of ${nonExistentID}`);
+  });
+});
+
+describe("GET /api/users", () => {
+  it("Returns a status of 200.", async () => {
+    const { status, body } = await request(app).get("/api/users");
+    expect(status).toBe(200);
+  });
+  it("Returns an object with a key of 'usernames' that has an array as its value.", async () => {
+    const { body } = await request(app).get("/api/users");
+    expect(body).toBeInstanceOf(Object);
+    expect(body.usernames).toBeInstanceOf(Array);
+  });
+  it("The array of contains objects with a key of 'username' and a string as the value.", async () => {
+    const { body } = await request(app).get("/api/users");
+    body.usernames.forEach(() => {
+      expect.objectContaining({
+        username: expect.any(String),
+      });
+    });
   });
 });
