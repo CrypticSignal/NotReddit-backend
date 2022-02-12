@@ -372,3 +372,27 @@ describe("GET /api/users/:username", () => {
     });
   });
 });
+
+describe.only("POST /api/articles", () => {
+  it("Returns a status of 201 and the updated article in the correct format.", async () => {
+    const data = {
+      author: "butter_bridge",
+      title: "test-title",
+      body: "test-body",
+      topic: "cats",
+    };
+    const { status, body } = await request(app).post("/api/articles").send(data);
+    expect(status).toBe(201);
+    expect(body).toBeInstanceOf(Object);
+    expect(body.article).toBeDefined();
+    expect(body.article).toEqual({
+      article_id: expect.any(Number),
+      title: "test-title",
+      body: "test-body",
+      votes: 0,
+      topic: "cats",
+      author: "butter_bridge",
+      created_at: expect.any(String),
+    });
+  });
+});

@@ -1,4 +1,9 @@
-const { fetchArticles, updateArticleById, fetchArticleById } = require("../models/articles.models");
+const {
+  addArticle,
+  fetchArticles,
+  updateArticleById,
+  fetchArticleById,
+} = require("../models/articles.models");
 
 exports.getArticles = async (req, res, next) => {
   const sortBy = req.query.sort_by ? req.query.sort_by : "created_at";
@@ -25,6 +30,15 @@ exports.patchArticleById = async (req, res, next) => {
   try {
     const updatedArticle = await updateArticleById(req.params.article_id, req.body);
     res.status(200).send(updatedArticle);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.postArticle = async (req, res, next) => {
+  try {
+    const addedArticle = await addArticle(req.body);
+    res.status(201).send(addedArticle);
   } catch (err) {
     next(err);
   }

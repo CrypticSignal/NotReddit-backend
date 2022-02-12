@@ -111,3 +111,16 @@ exports.updateArticleById = async (id, requestBody) => {
     article: queryResult.rows[0],
   };
 };
+
+exports.addArticle = async (data) => {
+  const query = `
+  INSERT into articles(author, title, body, topic)
+  VALUES ('${data.author}', '${data.title}', '${data.body}', '${data.topic}') RETURNING *;
+  `;
+
+  const queryResult = await db.query(query);
+
+  return {
+    article: queryResult.rows[0],
+  };
+};
