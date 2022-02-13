@@ -124,3 +124,20 @@ exports.addArticle = async (data) => {
     article: queryResult.rows[0],
   };
 };
+
+exports.deleteArticleById = async (articleID) => {
+  if (isNaN(articleID)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid article ID specified",
+    });
+  }
+  const queryResult = await db.query(`DELETE FROM articles WHERE article_id=$1`, [articleID]);
+
+  if (!queryResult.rowCount) {
+    return Promise.reject({
+      status: 400,
+      msg: `No article with an ID of ${articleID} was found.`,
+    });
+  }
+};

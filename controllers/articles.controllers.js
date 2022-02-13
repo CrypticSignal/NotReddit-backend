@@ -1,5 +1,6 @@
 const {
   addArticle,
+  deleteArticleById,
   fetchArticles,
   updateArticleById,
   fetchArticleById,
@@ -39,6 +40,15 @@ exports.postArticle = async (req, res, next) => {
   try {
     const addedArticle = await addArticle(req.body);
     res.status(201).send(addedArticle);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteArticle = async (req, res, next) => {
+  try {
+    await deleteArticleById(req.params.article_id);
+    res.sendStatus(204);
   } catch (err) {
     next(err);
   }

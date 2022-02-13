@@ -10,6 +10,7 @@ const {
   getArticleById,
   patchArticleById,
   postArticle,
+  deleteArticle,
 } = require("./controllers/articles.controllers");
 
 const {
@@ -45,6 +46,7 @@ app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/comments/:comment_id", patchCommentById);
 app.patch("/api/articles/:article_id", patchArticleById);
 
+app.delete("/api/articles/:article_id", deleteArticle);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.all("/*", handleInvalidEndpoint);

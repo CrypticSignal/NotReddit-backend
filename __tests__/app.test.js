@@ -415,3 +415,22 @@ describe("POST /api/users", () => {
     });
   });
 });
+
+describe("DELETE /api/articles/:article_id", () => {
+  it("Returns a status of 204 when given a valid article ID", async () => {
+    const { status, body } = await request(app).delete("/api/articles/2");
+    expect(status).toBe(204);
+    expect(body).toEqual({});
+  });
+  it("Returns a status of 400 and the correct msg if the article ID does not exist", async () => {
+    const nonExistentID = 9999;
+    const { status, body } = await request(app).delete(`/api/articles/${nonExistentID}`);
+    expect(status).toBe(400);
+    expect(body.msg).toBe(`No article with an ID of ${nonExistentID} was found.`);
+  });
+  it("Returns a status of 400 and the correct msg if something other than a number is specified at the end of the path", async () => {
+    const { status, body } = await request(app).delete("/api/articles/a");
+    expect(status).toBe(400);
+    expect(body.msg).toBe("Invalid article ID specified");
+  });
+});
