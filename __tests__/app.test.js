@@ -373,7 +373,7 @@ describe("GET /api/users/:username", () => {
   });
 });
 
-describe.only("POST /api/articles", () => {
+describe("POST /api/articles", () => {
   it("Returns a status of 201 and the updated article in the correct format.", async () => {
     const data = {
       author: "butter_bridge",
@@ -393,6 +393,25 @@ describe.only("POST /api/articles", () => {
       topic: "cats",
       author: "butter_bridge",
       created_at: expect.any(String),
+    });
+  });
+});
+
+describe("POST /api/users", () => {
+  it("Returns a status of 201 and the added user in the correct format", async () => {
+    const data = {
+      name: "Test Name",
+      username: "test-user",
+      avatar_url: "https://via.placeholder.com/150",
+    };
+    const { status, body } = await request(app).post("/api/users").send(data);
+    expect(status).toBe(201);
+    expect(body).toBeInstanceOf(Object);
+    expect(body.addedUser).toBeDefined();
+    expect(body.addedUser).toEqual({
+      username: "test-user",
+      avatar_url: "https://via.placeholder.com/150",
+      name: "Test Name",
     });
   });
 });

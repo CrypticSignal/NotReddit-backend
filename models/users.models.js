@@ -13,3 +13,14 @@ exports.fetchUser = async (username) => {
     user: queryResult.rows[0],
   };
 };
+
+exports.addUser = async (userData) => {
+  const query = `
+  INSERT INTO users(name, username, avatar_url)
+  VALUES ('${userData.name}', '${userData.username}', '${userData.avatar_url}') RETURNING *;
+  `;
+  const queryResult = await db.query(query);
+  return {
+    addedUser: queryResult.rows[0],
+  };
+};

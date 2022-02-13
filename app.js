@@ -20,7 +20,7 @@ const {
 } = require("./controllers/comments.controllers");
 
 const { getTopics } = require("./controllers/topics.controller");
-const { getUsernames, getUser } = require("./controllers/users.controllers");
+const { getUsernames, getUser, postUser } = require("./controllers/users.controllers");
 const { describeEndpoints } = require("./controllers/endpoints.controller");
 
 const cors = require("cors");
@@ -38,6 +38,7 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.get("/api/users", getUsernames);
 app.get("/api/users/:username", getUser);
 
+app.post("/api/users", postUser);
 app.post("/api/articles", postArticle);
 app.post("/api/articles/:article_id/comments", postComment);
 
