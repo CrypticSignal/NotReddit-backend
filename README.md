@@ -50,7 +50,7 @@ npm run setup-dbs
 npm run seed
 ```
 
-This will seed the development data with the data in `/db/data/development-data`.
+This will seed the development database with the data in `/db/data/development-data`.
 
 **Running the development server:**
 
